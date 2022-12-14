@@ -1,0 +1,41 @@
+# coding=utf-8
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import time
+import requests as rq
+import re
+
+# 知乎大神弗兰克扬长篇巨作-《白非立上进记》珍藏版
+if __name__ == '__main__':
+    response = rq.get("https://zhuanlan.zhihu.com/p/91072728")
+    response.encoding = "utf-8"
+    html = response.text
+
+    count = 1
+    print(count)
+    soup = BeautifulSoup(html, "html.parser")
+    results = soup.find_all(name='div', attrs={"class": "RichText ztext Post-RichText css-4em6pe"})
+    title = soup.find_all(name="h1", attrs={"class": "Post-Title"})
+    links = soup.find_all(name="a", attrs={"data-draft-node": "block"})
+    print(links[-1].get("data-text"))
+    print(links[-1].get("href"))
+
+    file = open("zhihu.txt", "a", encoding="utf-8")
+
+    while len(links) != 0:
+        content = title[0].string
+        targetLink = links[-1].get("href")
+        content = content + "\n" + re.sub("<.*?>", "\n", str(results[0]))
+        print(content)
+        file.write(content)
+
+        response = rq.get(targetLink)
+        response.encoding = "utf-8"
+        html = response.text
+        soup = BeautifulSoup(html, "html.parser")
+        results = soup.find_all(name='div', attrs={"class": "RichText ztext Post-RichText css-4em6pe"})
+        title = soup.find_all(name="h1", attrs={"class": "Post-Title"})
+        links = soup.find_all(name="a", attrs={"data-draft-node": "block"})
+        time.sleep(2)
+
+    file.close()
