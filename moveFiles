@@ -1,0 +1,20 @@
+import os
+import shutil
+
+# 把1250个图片文件按照50个一组移动到文件夹内
+# 图片文件名字规律是dump (1).png--dump (2).png以此类推
+# 新建文件夹名字随意命名
+
+def main():
+    path = "./"
+    fileName1 = "dump ("
+    fileName2 = ").png"
+    for i in range(25):
+        newPath = path + str(i + 1)
+        os.mkdir(newPath)
+        for j in range(50):
+            singleFile = fileName1 + str(i * 50 + j + 1) + fileName2
+            shutil.move(singleFile, newPath)
+
+if __name__ == '__main__':
+    main()
